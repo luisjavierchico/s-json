@@ -1,26 +1,26 @@
 /*
  ============================================================================
- Name					: JsonParser.cpp
- Author				: Luis J. Chico
- Version			: 1.0
- Copyright		: S-Json is a Symbian C/C++ Json Parser easy and simple to use by 
- 								LuisJavier.Chico[at]gmail[dot]com http://code.google.com/p/s-json/ (Aug-2009)
- 								
- 								## This program is free software; you can redistribute it and/or
-								## modify it under the terms of the GNU General Public License as
-								## published by the Free Software Foundation; either version 3 of the
-								## License, or any later version.
-								##
-								## This program is distributed in the hope that it will be useful,
-								## but WITHOUT ANY WARRANTY; without even the implied warranty of
-								## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-								## General Public License for more details.
-								##
-								## You find a copy of the GNU General Public License in the file
-								## license.txt along with this program; if not, write to the Free
-								## Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ Name		: JsonParser.cpp
+ Author		: Luis J. Chico
+ Version	: 1.1
+ Copyright	: S-Json is a Symbian C/C++ Json Parser easy and simple to use by 
+ 			LuisJavier.Chico[at]gmail[dot]com http://code.google.com/p/s-json/ (Oct-2009)
+
+			## This program is free software; you can redistribute it and/or
+			## modify it under the terms of the GNU General Public License as
+			## published by the Free Software Foundation; either version 3 of the
+			## License, or any later version.
+			##
+			## This program is distributed in the hope that it will be useful,
+			## but WITHOUT ANY WARRANTY; without even the implied warranty of
+			## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+			## General Public License for more details.
+			##
+			## You find a copy of the GNU General Public License in the file
+			## license.txt along with this program; if not, write to the Free
+			## Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 								
- Description	: CJsonParser implementation based on previous work from Cesar Guirao cesarg@tid.es
+ Description: CJsonParser implementation based on previous work from Cesar Guirao cesarg@tid.es
  ============================================================================
  */
 // INCLUDE FILES
@@ -60,9 +60,9 @@ void CJsonParser::Close( RPointerArray<jsonStruct>* aJson )
 			case EJsonNumber:
 								
 				(*aJson)[x]->iParam->Close();
-				((RBuf8*)(*aJson)[x]->iVal)->Close();
+				((RBuf*)(*aJson)[x]->iVal)->Close();
 				delete (*aJson)[x]->iParam;
-				delete ((RBuf8*)(*aJson)[x]->iVal);				
+				delete ((RBuf*)(*aJson)[x]->iVal);				
 				
 				break;
 			case EJsonArray:
@@ -91,7 +91,7 @@ void CJsonParser::Close( RPointerArray<jsonStruct>* aJson )
  * 
  * Parses plain json string into an internal json structure
  */
-void CJsonParser::StartDecodingL(const TDesC8& aJson)
+void CJsonParser::StartDecodingL(const TDesC& aJson)
 	{	
 	iLastType = RArray<TJsonValueType>();
 	CConsumeString* string = CConsumeString::NewL(aJson);
@@ -102,15 +102,15 @@ void CJsonParser::StartDecodingL(const TDesC8& aJson)
 	iLastType.Close();
 	}
 
-TInt CJsonParser::GetParameterCount(const TDesC8& aParameter, RPointerArray<jsonStruct>* aJson)
+TInt CJsonParser::GetParameterCount(const TDesC& aParameter, RPointerArray<jsonStruct>* aJson)
 	{
-	if (aParameter != KNullDesC8)
+	if (aParameter != KNullDesC)
 		{
 		TInt i;
 		i = aParameter.Locate(']');
 		
 		// non string parameters
-		TLex8 tmp = TLex8(aParameter.Mid(1,i-1));
+		TLex tmp = TLex(aParameter.Mid(1,i-1));
 		TInt tmpIndex;
 		if ( tmp.Val(tmpIndex) == KErrNone )
 			{
@@ -140,9 +140,9 @@ TInt CJsonParser::GetParameterCount(const TDesC8& aParameter, RPointerArray<json
  * CJsonParser::GetParameterCount()
  * 
  * Returns number of elements in a json element
- * i.ex: GetParameterCount(_L8("[test][1][2]"));
+ * i.ex: GetParameterCount(_L("[test][1][2]"));
  */
-TInt CJsonParser::GetParameterCount(const TDesC8& aParameter)
+TInt CJsonParser::GetParameterCount(const TDesC& aParameter)
 	{
 	if (iJson == NULL)
 		return 0;
@@ -154,9 +154,9 @@ TInt CJsonParser::GetParameterCount(const TDesC8& aParameter)
  * CJsonParser::GetParameterValue()
  * 
  * Returns by reference an element's value, on success function returns TRUE
- * i.ex: GetParameterValue(_L8("[test][1][2]"), &value_to_recover );
+ * i.ex: GetParameterValue(_L("[test][1][2]"), &value_to_recover );
  */
-TInt CJsonParser::GetParameterValue(const TDesC8& aParameter, TAny* aValue)
+TInt CJsonParser::GetParameterValue(const TDesC& aParameter, TAny* aValue)
 	{
 	if (iJson == NULL)
 		return 0;
@@ -164,15 +164,15 @@ TInt CJsonParser::GetParameterValue(const TDesC8& aParameter, TAny* aValue)
 		return GetParameterValue(aParameter,aValue,iJson);
 	}
 
-TInt CJsonParser::GetParameterValue(const TDesC8& aParameter, TAny* aValue,RPointerArray<jsonStruct>* aJson)
+TInt CJsonParser::GetParameterValue(const TDesC& aParameter, TAny* aValue,RPointerArray<jsonStruct>* aJson)
 	{
-	if (aParameter != KNullDesC8)
+	if (aParameter != KNullDesC)
 		{
 		TInt i;
 		i = aParameter.Locate(']');
 		
 		// non string parameters
-		TLex8 tmp = TLex8(aParameter.Mid(1,i-1));
+		TLex tmp = TLex(aParameter.Mid(1,i-1));
 		TInt tmpIndex;
 		if ( tmp.Val(tmpIndex) == KErrNone )
 			{
@@ -194,7 +194,7 @@ TInt CJsonParser::GetParameterValue(const TDesC8& aParameter, TAny* aValue,RPoin
 							return GetParameterValue(  aParameter.Right(aParameter.Length()-i-1),aValue,(RPointerArray<jsonStruct>*)(*aJson)[x]->iVal );
 						
 						case EJsonFixedValue:
-							if ( (((TDesC8*)(*aJson)[x]->iVal)->Compare(_L8("true"))) == 0 )
+							if ( (((TDesC*)(*aJson)[x]->iVal)->Compare(_L("true"))) == 0 )
 								*((int*)aValue) = ETrue;
 							else
 								*((int*)aValue) = EFalse;
@@ -203,9 +203,9 @@ TInt CJsonParser::GetParameterValue(const TDesC8& aParameter, TAny* aValue,RPoin
 							
 						case EJsonNumber:
 						case EJsonString:							
-							if ( ((TDes8*)aValue)->MaxLength() < ((*aJson)[x]->iParam)->Length() )
+							if ( ((TDes*)aValue)->MaxLength() < ((*aJson)[x]->iParam)->Length() )
 								return EFalse;
-							((TDes8*)aValue)->Copy( (*(RBuf8*)(*aJson)[x]->iVal) );
+							((TDes*)aValue)->Copy( (*(RBuf*)(*aJson)[x]->iVal) );
 							return ETrue;
 						}
 					}
@@ -244,7 +244,7 @@ TAny* CJsonParser::Decode(CConsumeString* aJson)
 	else
 		{
 		// String
-		RBuf8* jsonString = aJson->getToken(_L8(" \t\r\n,}]"));
+		RBuf* jsonString = aJson->getToken(_L(" \t\r\n,}]"));
 		if ( jsonString )
 			{
 			if ( isFixedValue( jsonString ) )
@@ -260,9 +260,9 @@ TAny* CJsonParser::Decode(CConsumeString* aJson)
 		}
 	}
 
-RBuf8* CJsonParser::parseString(CConsumeString* aJson)
+RBuf* CJsonParser::parseString(CConsumeString* aJson)
 	{
-	RBuf8 *string = new RBuf8();
+	RBuf *string = new RBuf();
 	aJson->consumeFirst();
 	TChar c = aJson->charAt(0);
 	while ( c != '"' )
@@ -327,14 +327,14 @@ TAny* CJsonParser::parseObject(CConsumeString* aJson)
 			aJson->skipSpace();
 			}
 		
-		RBuf8* jsonParam;
+		RBuf* jsonParam;
 		if ( isString(aJson->charAt(0)) )
 			{			
 			jsonParam = parseString(aJson);
 			}
 		else
 			{
-			jsonParam = aJson->getToken(_L8(" \n\r\t:"));
+			jsonParam = aJson->getToken(_L(" \n\r\t:"));
 			}
 		aJson->skipSpace();
 		aJson->consumeFirst();
@@ -362,9 +362,9 @@ TAny* CJsonParser::parseObject(CConsumeString* aJson)
 	return jsonObject;
 	}
 
-RBuf8* CJsonParser::parseNumber(CConsumeString* aJson)
+RBuf* CJsonParser::parseNumber(CConsumeString* aJson)
 	{
-	RBuf8 *string = new RBuf8();
+	RBuf *string = new RBuf();
 	
 	TChar c = aJson->charAt(0);
 	while ( c>= '0' && c<='9' )
@@ -419,13 +419,13 @@ TAny* CJsonParser::parseArray(CConsumeString* aJson)
 	return jsonObject;
 	}
 
-inline TBool CJsonParser::isFixedValue(RBuf8* string)
+inline TBool CJsonParser::isFixedValue(RBuf* string)
 	{
-	if ( !string->Compare(_L8("true")) )
+	if ( !string->Compare(_L("true")) )
 		return ETrue;
-	else if ( !string->Compare(_L8("false")) )
+	else if ( !string->Compare(_L("false")) )
 		return ETrue;
-	else if ( !string->Compare(_L8("null")) )
+	else if ( !string->Compare(_L("null")) )
 		return ETrue;
 	else
 		return EFalse;
@@ -456,7 +456,7 @@ inline TBool CJsonParser::isNumber(TChar aChar)
  * 
  * Start encoding internal structure 
  */
-void CJsonParser::StartEncoding(RBuf8* aJsonEncoded)
+void CJsonParser::StartEncoding(RBuf* aJsonEncoded)
 	{
 	iJsonEncoded = aJsonEncoded;
 	}
@@ -484,7 +484,7 @@ void CJsonParser::openObject()
 		User::Panic(_L("CJsonParser: no memory"),errno);
 		}	
 	
-	iJsonEncoded->Append(_L8("{"));
+	iJsonEncoded->Append(_L("{"));
 	}
 /*
  * CJsonParser::closeObject()
@@ -500,7 +500,7 @@ void CJsonParser::closeObject()
 		User::Panic(_L("CJsonParser: no memory"),errno);
 		}	
 	
-	iJsonEncoded->Append(_L8("}"));	
+	iJsonEncoded->Append(_L("}"));	
 	}
 /*
  * CJsonParser::openArray()
@@ -515,7 +515,7 @@ void CJsonParser::openArray()
 		User::Panic(_L("CJsonParser: no memory"),errno);
 		}	
 	
-	iJsonEncoded->Append(_L8("["));	
+	iJsonEncoded->Append(_L("["));	
 	}
 /*
  * CJsonParser::closeArray()
@@ -530,14 +530,14 @@ void CJsonParser::closeArray()
 		User::Panic(_L("CJsonParser: no memory"),errno);
 		}	
 	
-	iJsonEncoded->Append(_L8("]"));	
+	iJsonEncoded->Append(_L("]"));	
 	}
 /*
  * CJsonParser::addParameter()
  * 
  * Add parameter element
  */
-void CJsonParser::addParameter(const TDesC8& aParameter)
+void CJsonParser::addParameter(const TDesC& aParameter)
 	{
 	if ( aParameter.Length() != 0 )
 		{
@@ -547,9 +547,9 @@ void CJsonParser::addParameter(const TDesC8& aParameter)
 			User::Panic(_L("CJsonParser: no memory"),errno);
 			}	
 		
-		iJsonEncoded->Append(_L8("\""));
+		iJsonEncoded->Append(_L("\""));
 		iJsonEncoded->Append(aParameter);
-		iJsonEncoded->Append(_L8("\":"));
+		iJsonEncoded->Append(_L("\":"));
 		}	
 	}
 /*
@@ -557,7 +557,7 @@ void CJsonParser::addParameter(const TDesC8& aParameter)
  * 
  * Add string value element 
  */
-void CJsonParser::addString(const TDesC8& aParameter)
+void CJsonParser::addString(const TDesC& aParameter)
 	{
 	if ( aParameter.Length() != 0 )
 		{
@@ -567,9 +567,9 @@ void CJsonParser::addString(const TDesC8& aParameter)
 			User::Panic(_L("CJsonParser: no memory"),errno);
 			}	
 		
-		iJsonEncoded->Append(_L8("\""));
+		iJsonEncoded->Append(_L("\""));
 		iJsonEncoded->Append(aParameter);
-		iJsonEncoded->Append(_L8("\""));
+		iJsonEncoded->Append(_L("\""));
 		}	
 	}
 /*
@@ -586,9 +586,9 @@ void CJsonParser::addFixedValue(TBool aParameter)
 		}	
 	
 	if ( aParameter )
-		iJsonEncoded->Append(_L8("true"));
+		iJsonEncoded->Append(_L("true"));
 	else
-		iJsonEncoded->Append(_L8("false"));
+		iJsonEncoded->Append(_L("false"));
 	}
 /*
  * CJsonParser::addNext()
@@ -603,7 +603,7 @@ void CJsonParser::addNext()
 		User::Panic(_L("CJsonParser: no memory"),errno);
 		}	
 	
-	iJsonEncoded->Append(_L8(","));
+	iJsonEncoded->Append(_L(","));
 	}
 /*
  * CJsonParser::addNumber()
@@ -633,17 +633,17 @@ void CJsonParser::PrintDebug(RPointerArray<jsonStruct>* aJson,TInt aLevel)
 			case EJsonFixedValue:
 				RDebug::Printf("**** level/pos: %d/%d parameter: %S value: %S  (fixed value)",aLevel,x,
 						(*aJson)[x]->iParam,
-						((RBuf8*)(*aJson)[x]->iVal));
+						((RBuf*)(*aJson)[x]->iVal));
 				break;				
 			case EJsonString:
 				RDebug::Printf("**** level/pos: %d/%d parameter: %S value: %S  (string)",aLevel,x,
 						(*aJson)[x]->iParam,
-						((RBuf8*)(*aJson)[x]->iVal));
+						((RBuf*)(*aJson)[x]->iVal));
 				break;
 			case EJsonNumber:
 				RDebug::Printf("**** level/pos: %d/%d parameter: %S value: %S  (number)",aLevel,x,
 						(*aJson)[x]->iParam,
-						((RBuf8*)(*aJson)[x]->iVal));
+						((RBuf*)(*aJson)[x]->iVal));
 				break;
 			case EJsonArray:
 				if ((*aJson)[x]->iParam != NULL )
@@ -675,4 +675,4 @@ void CJsonParser::PrintDebug(RPointerArray<jsonStruct>* aJson,TInt aLevel)
 			}
 		}
 	}
-// End of File
+//// End of File
