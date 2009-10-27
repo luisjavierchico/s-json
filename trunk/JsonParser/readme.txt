@@ -6,7 +6,7 @@
 S-Json is a Symbian C/C++ Json Parser easy and simple to use.
 Its code is released under the GNU GPLv3 (see COPYING FILE)
 
-Release Version 1.0 includes:
+Release Version 1.1 includes:
 	
 	./COPYING			-- GNU GPLv3 License
 	./readme.txt	-- this file
@@ -15,6 +15,10 @@ Release Version 1.0 includes:
 	./JsonParser/inc/JsonParser.h
 	./JsonParser/src/ConsumeString.cpp
 	./JsonParser/src/JsonParser.cpp
+	
+Changelog:
+ 1.1 16 bit descriptor compatibility
+ 1.0 Initial Release	
 
 ===========================================================	
 
@@ -32,16 +36,16 @@ Below are some coding and decoding examples for Symbian C++
 void decode_string_example()
 	{
 	CJsonParser de = CJsonParser();	
-	de.StartDecodingL(_L8("[{\"Id\":197,\"interactions\":[{\"Id\":606,\"ticket\":\"1cb\"},{\"Id\":607,\"ticket\":\"0a782069196ec\"}],\"widgetAdDownloadUrl\":\"aaaa\"},{\"Id\":11197,\"interactions\":[{\"Id\":63406,\"ticket\":\"1cb\"},{\"Id\":602227,\"ticket\":\"0a782069196ec\"}],\"widgetAdDownloadUrl\":\"bbb\"}]"));
-	TInt a = de.GetParameterCount(_L8("[0]"));
-	TInt b = de.GetParameterCount(_L8("[1][interactions][1]"));
+	de.StartDecodingL(_L("[{\"Id\":197,\"interactions\":[{\"Id\":606,\"ticket\":\"1cb\"},{\"Id\":607,\"ticket\":\"0a782069196ec\"}],\"widgetAdDownloadUrl\":\"aaaa\"},{\"Id\":11197,\"interactions\":[{\"Id\":63406,\"ticket\":\"1cb\"},{\"Id\":602227,\"ticket\":\"0a782069196ec\"}],\"widgetAdDownloadUrl\":\"bbb\"}]"));
+	TInt a = de.GetParameterCount(_L("[0]"));
+	TInt b = de.GetParameterCount(_L("[1][interactions][1]"));
 
 	
 	CJsonParser ed = CJsonParser();
-	ed.StartDecodingL(_L8("{\"DOB\":\"\\/Date(928142400000+0200)\\/\",\"Id\":9223372036854775807,\"country\":\"String content\",\"created\":\"\\/Date(928142400000+0200)\\/\",\"gender\":\"String content\",\"lastAdUpdate\":\"\\/Date(928142400000+0200)\\/\",\"province\":\"String content\",\"tags\":[{\"Id\":2147483647,\"active\":true,\"name\":\"String content\",\"rootId\":2147483647}],\"userPreferences\":{\"active\":true,\"adtiming\":\"String content\",\"adtypes\":[{\"Id\":2147483647,\"active\":true,\"name\":\"String content\",\"rootId\":2147483647}]},\"username\":\"String content\"}"));
+	ed.StartDecodingL(_L("{\"DOB\":\"\\/Date(928142400000+0200)\\/\",\"Id\":9223372036854775807,\"country\":\"String content\",\"created\":\"\\/Date(928142400000+0200)\\/\",\"gender\":\"String content\",\"lastAdUpdate\":\"\\/Date(928142400000+0200)\\/\",\"province\":\"String content\",\"tags\":[{\"Id\":2147483647,\"active\":true,\"name\":\"String content\",\"rootId\":2147483647}],\"userPreferences\":{\"active\":true,\"adtiming\":\"String content\",\"adtypes\":[{\"Id\":2147483647,\"active\":true,\"name\":\"String content\",\"rootId\":2147483647}]},\"username\":\"String content\"}"));
 
-	TBuf8<320> Id;
-	int id = de.GetParameterValue(_L8("[1][interactions][1][ticket]"),&Id);
+	TBuf<320> Id;
+	int id = de.GetParameterValue(_L("[1][interactions][1][ticket]"),&Id);
 	}
 
 // json encoding example
@@ -49,18 +53,18 @@ void encode_data_example()
 	{
 	CJsonParser de = CJsonParser();
 
-	RBuf8* jsonPost = new RBuf8();
+	RBuf* jsonPost = new RBuf();
 	de.StartEncoding(jsonPost);
 		de.openObject();
-			de.addParameter(_L8("adPointsRedeemUrl"));de.addString(_L8("String content"));de.addNext();
-			de.addParameter(_L8("latestAppVersion"));
+			de.addParameter(_L("adPointsRedeemUrl"));de.addString(_L("String content"));de.addNext();
+			de.addParameter(_L("latestAppVersion"));
 			de.openObject();
-				de.addParameter(_L8("handset"));	de.addString(_L8("String content"));de.addNext();
-				de.addParameter(_L8("version"));	de.addString(_L8("String content"));de.addNext();
-				de.addParameter(_L8("downloadUrl"));de.addString(_L8("String content"));de.addNext();
-				de.addParameter(_L8("required"));	de.addFixedValue(ETrue);
+				de.addParameter(_L("handset"));	de.addString(_L("String content"));de.addNext();
+				de.addParameter(_L("version"));	de.addString(_L("String content"));de.addNext();
+				de.addParameter(_L("downloadUrl"));de.addString(_L("String content"));de.addNext();
+				de.addParameter(_L("required"));	de.addFixedValue(ETrue);
 			de.closeObject();de.addNext();
-			de.addParameter(_L8("recommendFriendUrl"));de.addString(_L8("String content"));
+			de.addParameter(_L("recommendFriendUrl"));de.addString(_L("String content"));
 		de.closeObject();
 	de.closeEncoding();	
 
