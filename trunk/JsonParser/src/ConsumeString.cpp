@@ -1,26 +1,26 @@
 /*
  ============================================================================
- Name					: ConsumeString.cpp
- Author				: Luis J. Chico
- Version			: 1.0
- Copyright		: S-Json is a Symbian C/C++ Json Parser easy and simple to use by 
- 								LuisJavier.Chico[at]gmail[dot]com http://code.google.com/p/s-json/ (Aug-2009)
- 								
- 								## This program is free software; you can redistribute it and/or
-								## modify it under the terms of the GNU General Public License as
-								## published by the Free Software Foundation; either version 3 of the
-								## License, or any later version.
-								##
-								## This program is distributed in the hope that it will be useful,
-								## but WITHOUT ANY WARRANTY; without even the implied warranty of
-								## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-								## General Public License for more details.
-								##
-								## You find a copy of the GNU General Public License in the file
-								## license.txt along with this program; if not, write to the Free
-								## Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ Name		: ConsumeString.cpp
+ Author		: Luis J. Chico
+ Version	: 1.0
+ Copyright	: S-Json is a Symbian C/C++ Json Parser easy and simple to use by 
+ 			LuisJavier.Chico[at]gmail[dot]com http://code.google.com/p/s-json/ (Oct-2009)
+
+			## This program is free software; you can redistribute it and/or
+			## modify it under the terms of the GNU General Public License as
+			## published by the Free Software Foundation; either version 3 of the
+			## License, or any later version.
+			##
+			## This program is distributed in the hope that it will be useful,
+			## but WITHOUT ANY WARRANTY; without even the implied warranty of
+			## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+			## General Public License for more details.
+			##
+			## You find a copy of the GNU General Public License in the file
+			## license.txt along with this program; if not, write to the Free
+			## Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 								
- Description	: CConsumeString implementation based on previous work from Cesar Guirao cesarg@tid.es
+ Description: CConsumeString implementation based on previous work from Cesar Guirao cesarg@tid.es
  ============================================================================
  */
 
@@ -35,7 +35,7 @@ CConsumeString::~CConsumeString()
 	{
 	}
 
-CConsumeString* CConsumeString::NewLC(const TDesC8& aString)
+CConsumeString* CConsumeString::NewLC(const TDesC& aString)
 	{
 	CConsumeString* self = new (ELeave) CConsumeString();
 	CleanupStack::PushL(self);
@@ -43,14 +43,14 @@ CConsumeString* CConsumeString::NewLC(const TDesC8& aString)
 	return self;
 	}
 
-CConsumeString* CConsumeString::NewL(const TDesC8& aString)
+CConsumeString* CConsumeString::NewL(const TDesC& aString)
 	{
 	CConsumeString* self = CConsumeString::NewLC(aString);
 	CleanupStack::Pop(); // self;
 	return self;
 	}
 
-void CConsumeString::ConstructL(const TDesC8& aString)
+void CConsumeString::ConstructL(const TDesC& aString)
 	{
 	iString.Set(aString);
 	}
@@ -90,14 +90,14 @@ void CConsumeString::skipSpace()
     	}
 	}
 
-RBuf8* CConsumeString::getToken(const TDesC8& aInvalidChars)
+RBuf* CConsumeString::getToken(const TDesC& aInvalidChars)
 	{
 	if ( iIndex >= iString.Length() )
 		{
 		return NULL;
 		}
 	
-	RBuf8* string = new RBuf8();
+	RBuf* string = new RBuf();
 	
 	while ( aInvalidChars.Locate(iString[iIndex]) == KErrNotFound )
 		{		
