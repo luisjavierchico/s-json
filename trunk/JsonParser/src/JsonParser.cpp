@@ -631,46 +631,46 @@ void CJsonParser::PrintDebug(RPointerArray<jsonStruct>* aJson,TInt aLevel)
 		switch ( (*aJson)[x]->iType )
 			{
 			case EJsonFixedValue:
-				RDebug::Printf("**** level/pos: %d/%d parameter: %S value: %S  (fixed value)",aLevel,x,
+				RDebug::Print(_L("**** level/pos: %d/%d parameter: %S value: %S  (fixed value)"),aLevel,x,
 						(*aJson)[x]->iParam,
 						((RBuf*)(*aJson)[x]->iVal));
 				break;				
 			case EJsonString:
-				RDebug::Printf("**** level/pos: %d/%d parameter: %S value: %S  (string)",aLevel,x,
+				RDebug::Print(_L("**** level/pos: %d/%d parameter: %S value: %S  (string)"),aLevel,x,
 						(*aJson)[x]->iParam,
 						((RBuf*)(*aJson)[x]->iVal));
 				break;
 			case EJsonNumber:
-				RDebug::Printf("**** level/pos: %d/%d parameter: %S value: %S  (number)",aLevel,x,
+				RDebug::Print(_L("**** level/pos: %d/%d parameter: %S value: %S  (number)"),aLevel,x,
 						(*aJson)[x]->iParam,
 						((RBuf*)(*aJson)[x]->iVal));
 				break;
 			case EJsonArray:
 				if ((*aJson)[x]->iParam != NULL )
-					RDebug::Printf("********* array %S",(*aJson)[x]->iParam);
+					RDebug::Print(_L("********* array %S"),(*aJson)[x]->iParam);
 				else
-					RDebug::Printf("********* array");
+					RDebug::Print(_L("********* array"));
 
 				PrintDebug((RPointerArray<jsonStruct>*)(*aJson)[x]->iVal,aLevel+1);
 
 				if ((*aJson)[x]->iParam != NULL )
-					RDebug::Printf("********* end array %S",(*aJson)[x]->iParam);
+					RDebug::Print(_L("********* end array %S"),(*aJson)[x]->iParam);
 				else
-					RDebug::Printf("********* end array");
+					RDebug::Print(_L("********* end array"));
 
 			break;
 			case EJsonObject:
 				if ((*aJson)[x]->iParam != NULL )
-					RDebug::Printf("********* object %S",(*aJson)[x]->iParam);
+					RDebug::Print(_L("********* object %S"),(*aJson)[x]->iParam);
 				else
-					RDebug::Printf("********* object");
+					RDebug::Print(_L("********* object"));
 				
 				PrintDebug((RPointerArray<jsonStruct>*)(*aJson)[x]->iVal,aLevel+1);
 				
 				if ((*aJson)[x]->iParam != NULL )
-					RDebug::Printf("********* object %S",(*aJson)[x]->iParam);
+					RDebug::Print(_L("********* object %S"),(*aJson)[x]->iParam);
 				else
-					RDebug::Printf("********* object");
+					RDebug::Print(_L("********* object"));
 			break;
 			}
 		}
